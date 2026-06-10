@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercício 2 – Carrinho de Compras da Sessão</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0e0e12;
+      --surface: #16161c;
+      --card:    #1c1c24;
+      --border:  #2a2a35;
+      --text:    #eeeef5;
+      --muted:   #7070858;
+      --accent:  #f0c040;
+      --accent2: #5b8ef7;
+      --danger:  #e05555;
+      --success: #4bc98a;
+    }
+
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 60% 40% at 15% 0%, rgba(91,142,247,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 100%, rgba(240,192,64,.07) 0%, transparent 60%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 72px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+    .eyebrow {
+      font-size: .68rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    h1 em { color: var(--accent); font-style: normal; }
+
+    .layout {
+      width: 100%;
+      max-width: 760px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 580px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .panel-title {
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 12px;
+    }
+    input[type="text"]:focus { border-color: var(--accent2); }
+    input[type="text"]::placeholder { color: #46464e; }
+
+    button {
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: .9rem;
+      border-radius: 8px;
+      padding: 10px 20px;
+      border: none;
+      transition: all .18s ease;
+    }
+
+    .btn-add {
+      width: 100%;
+      background: var(--accent);
+      color: #0e0e12;
+    }
+    .btn-add:hover { background: #f5d060; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(240,192,64,.3); }
+
+    .btn-empty {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--danger);
+      margin-top: 16px;
+    }
+    .btn-empty:hover { background: rgba(224,85,85,.1); border-color: var(--danger); }
+
+    .counter {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .counter-label { font-size: .8rem; color: #666680; letter-spacing: .05em; margin-bottom: 20px; }
+
+    .list-panel { grid-column: span 2; }
+    @media (max-width: 580px) { .list-panel { grid-column: span 1; } }
+
+    #lista { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      animation: slideIn .2s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .item-name {
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .item-num {
+      font-family: 'Syne', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      background: var(--border);
+      color: #888;
+      border-radius: 4px;
+      padding: 2px 6px;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .btn-remove {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--danger);
+      font-size: .75rem;
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+    .btn-remove:hover { background: rgba(224,85,85,.12); border-color: var(--danger); }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px;
+      color: #46464e;
+      font-style: italic;
+      font-size: .9rem;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      min-height: 20px;
+      font-size: .8rem;
+      font-style: italic;
+      text-align: center;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .feedback.visible { opacity: 1; }
+    .feedback.ok  { color: var(--success); }
+    .feedback.err { color: var(--danger); }
+
+    .meta { margin-top: 28px; font-size: .72rem; color: #444; text-align: center; letter-spacing: .06em; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">Exercício 2 · SessionStorage</p>
+    <h1>Carrinho da <em>Sessão</em></h1>
+  </header>
+
+  <div class="layout">
+
+    <div class="panel">
+      <p class="panel-title">Adicionar produto</p>
+      <input type="text" id="nomeProduto" placeholder="Nome do produto…" />
+      <button class="btn-add" onclick="adicionar()">Adicionar ao carrinho</button>
+      <p class="feedback" id="feedback"></p>
+    </div>
+
+    <div class="panel" style="text-align:center;">
+      <p class="panel-title">Resumo</p>
+      <div class="counter" id="contador">0</div>
+      <p class="counter-label">produto(s) no carrinho</p>
+      <button class="btn-empty" onclick="esvaziar()">Esvaziar carrinho</button>
+    </div>
+
+    <div class="panel list-panel">
+      <p class="panel-title">Itens no carrinho</p>
+      <ul id="lista"></ul>
+    </div>
+
+  </div>
+
+  <p class="meta">Dados salvos na sessão via <code>sessionStorage</code> — ao fechar a aba o carrinho é zerado</p>
+
+  <script>
+    const CHAVE = "carrinho";
+    let produtos = [];
+    let timerFb;
+
+    // Carregar ao abrir a página
+    const salvo = sessionStorage.getItem(CHAVE);
+    if (salvo) {
+      produtos = JSON.parse(salvo);
+    }
+    renderizar();
+
+    function salvarSession() {
+      sessionStorage.setItem(CHAVE, JSON.stringify(produtos));
+    }
+
+    function adicionar() {
+      const input = document.getElementById("nomeProduto");
+      const nome  = input.value.trim();
+      if (!nome) {
+        feedback("Informe o nome do produto.", "err");
+        return;
+      }
+      produtos.push(nome);
+      salvarSession();
+      renderizar();
+      input.value = "";
+      input.focus();
+      feedback(`"${nome}" adicionado!`, "ok");
+    }
+
+    function remover(idx) {
+      const nome = produtos[idx];
+      produtos.splice(idx, 1);
+      salvarSession();
+      renderizar();
+      feedback(`"${nome}" removido.`, "err");
+    }
+
+    function esvaziar() {
+      if (produtos.length === 0) { feedback("O carrinho já está vazio.", "err"); return; }
+      produtos = [];
+      sessionStorage.removeItem(CHAVE);
+      renderizar();
+      feedback("Carrinho esvaziado.", "err");
+    }
+
+    function renderizar() {
+      const lista = document.getElementById("lista");
+      document.getElementById("contador").textContent = produtos.length;
+
+      if (produtos.length === 0) {
+        lista.innerHTML = '<li class="empty-state">Nenhum produto no carrinho ainda.</li>';
+        return;
+      }
+
+      lista.innerHTML = produtos.map((p, i) => `
+        <li class="item">
+          <span class="item-name">
+            <span class="item-num">${i + 1}</span>
+            ${escHtml(p)}
+          </span>
+          <button class="btn-remove" onclick="remover(${i})">Remover</button>
+        </li>
+      `).join("");
+    }
+
+    function feedback(msg, tipo) {
+      clearTimeout(timerFb);
+      const el = document.getElementById("feedback");
+      el.textContent = msg;
+      el.className = `feedback visible ${tipo}`;
+      timerFb = setTimeout(() => { el.className = "feedback"; }, 3000);
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    // Adicionar ao pressionar Enter
+    document.getElementById("nomeProduto").addEventListener("keydown", e => {
+      if (e.key === "Enter") adicionar();
+    });
+  </script>
+</body>
+</html>
