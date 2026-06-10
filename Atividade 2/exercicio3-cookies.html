@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercício 3 – Preferência de Idioma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f8f6f1;
+      --ink:     #1a1814;
+      --mid:     #5a5650;
+      --border:  #d8d2c8;
+      --accent:  #1e4b8f;
+      --gold:    #b08d40;
+      --surface: #ffffff;
+      --shadow:  rgba(26,24,20,.1);
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 16px 72px;
+      font-family: 'Jost', sans-serif;
+      color: var(--ink);
+    }
+
+    /* ── hero ── */
+    .hero {
+      text-align: center;
+      max-width: 640px;
+      margin-bottom: 52px;
+    }
+    .eyebrow {
+      font-size: .68rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .subtitle {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+    .phrase {
+      margin-top: 24px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--mid);
+      padding: 16px 28px;
+      border-left: 2px solid var(--gold);
+      text-align: left;
+    }
+
+    /* ── control card ── */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--shadow), 0 16px 48px var(--shadow);
+      padding: 36px 40px 32px;
+    }
+
+    .card-title {
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 8px;
+    }
+
+    select {
+      width: 100%;
+      appearance: none;
+      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5650' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 11px 40px 11px 14px;
+      font-family: 'Jost', sans-serif;
+      font-size: .95rem;
+      color: var(--ink);
+      cursor: pointer;
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 20px;
+    }
+    select:focus { border-color: var(--accent); }
+
+    .btns { display: flex; gap: 10px; }
+
+    button {
+      cursor: pointer;
+      font-family: 'Jost', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      border-radius: 6px;
+      padding: 10px 22px;
+      border: none;
+      transition: all .18s ease;
+      letter-spacing: .04em;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-save:hover { background: #163d78; box-shadow: 0 4px 16px rgba(30,75,143,.3); transform: translateY(-1px); }
+
+    .btn-remove {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--mid);
+    }
+    .btn-remove:hover { border-color: #aaa; color: var(--ink); background: var(--bg); }
+
+    .feedback {
+      margin-top: 16px;
+      min-height: 22px;
+      font-size: .8rem;
+      font-style: italic;
+      color: var(--gold);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(3px);
+      transition: opacity .3s, transform .3s;
+    }
+    .feedback.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── flag badges ── */
+    .flags {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .flag-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--mid);
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      transition: all .2s;
+    }
+    .flag-badge.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(30,75,143,.05);
+    }
+    .flag { font-size: 1rem; }
+
+    .meta { margin-top: 28px; font-size: .72rem; color: #aaa4a0; text-align: center; letter-spacing: .06em; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <p class="eyebrow">Exercício 3 · Cookies</p>
+    <h1 id="titulo">Preferência de Idioma</h1>
+    <p class="subtitle" id="subtitulo">Escolha o idioma da interface. Sua preferência será lembrada por 14 dias.</p>
+    <blockquote class="phrase" id="frase">A língua é a porta da alma.</blockquote>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="card-label">Configurações de idioma</p>
+
+    <label for="selectIdioma" id="select-label">Idioma preferido</label>
+    <select id="selectIdioma">
+      <option value="pt">🇧🇷 Português</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+
+    <div class="btns">
+      <button class="btn-save" id="btn-save" onclick="salvarPreferencia()">Salvar preferência</button>
+      <button class="btn-remove" id="btn-remove" onclick="removerPreferencia()">Remover</button>
+    </div>
+
+    <p class="feedback" id="feedback"></p>
+
+    <div class="flags">
+      <span class="flag-badge" id="flag-pt"><span class="flag">🇧🇷</span> Português</span>
+      <span class="flag-badge" id="flag-en"><span class="flag">🇬🇧</span> English</span>
+    </div>
+  </div>
+
+  <p class="meta">Preferência armazenada via <code>document.cookie</code> — válida por 14 dias</p>
+
+  <script>
+    // ── Textos ──────────────────────────────────────────────────
+    const textos = {
+      pt: {
+        titulo:      "Preferência de Idioma",
+        subtitulo:   "Escolha o idioma da interface. Sua preferência será lembrada por 14 dias.",
+        frase:       "A língua é a porta da alma.",
+        cardLabel:   "Configurações de idioma",
+        selectLabel: "Idioma preferido",
+        btnSave:     "Salvar preferência",
+        btnRemove:   "Remover",
+        fbSave:      "Preferência salva! Recarregue para confirmar.",
+        fbRemove:    "Preferência removida. Voltando ao padrão.",
+        fbLoad:      "Idioma carregado do cookie.",
+      },
+      en: {
+        titulo:      "Language Preference",
+        subtitulo:   "Choose your interface language. Your preference will be remembered for 14 days.",
+        frase:       "Language is the road map of a culture.",
+        cardLabel:   "Language settings",
+        selectLabel: "Preferred language",
+        btnSave:     "Save preference",
+        btnRemove:   "Remove",
+        fbSave:      "Preference saved! Reload to confirm.",
+        fbRemove:    "Preference removed. Returning to default.",
+        fbLoad:      "Language loaded from cookie.",
+      }
+    };
+
+    // ── Cookie helpers ──────────────────────────────────────────
+    function setCookie(nome, valor, dias) {
+      const maxAge = dias * 24 * 60 * 60; // segundos
+      document.cookie = `${nome}=${encodeURIComponent(valor)}; max-age=${maxAge}; path=/`;
+    }
+
+    function getCookie(nome) {
+      const par = document.cookie.split("; ").find(p => p.startsWith(nome + "="));
+      return par ? decodeURIComponent(par.split("=")[1]) : null;
+    }
+
+    function deleteCookie(nome) {
+      document.cookie = `${nome}=; max-age=0; path=/`;
+    }
+
+    // ── Aplicar idioma ──────────────────────────────────────────
+    function aplicarIdioma(idioma, mostrarMsg) {
+      const t = textos[idioma] || textos.pt;
+      document.getElementById("titulo").textContent      = t.titulo;
+      document.getElementById("subtitulo").textContent   = t.subtitulo;
+      document.getElementById("frase").textContent       = t.frase;
+      document.getElementById("card-label").textContent  = t.cardLabel;
+      document.getElementById("select-label").textContent = t.selectLabel;
+      document.getElementById("btn-save").textContent    = t.btnSave;
+      document.getElementById("btn-remove").textContent  = t.btnRemove;
+      document.getElementById("selectIdioma").value      = idioma;
+      document.getElementById("flag-pt").className = "flag-badge" + (idioma === "pt" ? " active" : "");
+      document.getElementById("flag-en").className = "flag-badge" + (idioma === "en" ? " active" : "");
+      document.documentElement.lang = idioma === "en" ? "en" : "pt-BR";
+      if (mostrarMsg) mostrarFeedback(t.fbLoad, false);
+    }
+
+    function salvarPreferencia() {
+      const idioma = document.getElementById("selectIdioma").value;
+      setCookie("idioma", idioma, 14);
+      aplicarIdioma(idioma, false);
+      mostrarFeedback(textos[idioma].fbSave, false);
+    }
+
+    function removerPreferencia() {
+      deleteCookie("idioma");
+      aplicarIdioma("pt", false);
+      mostrarFeedback(textos.pt.fbRemove, true);
+    }
+
+    let timerFb;
+    function mostrarFeedback(msg, aviso) {
+      clearTimeout(timerFb);
+      const el = document.getElementById("feedback");
+      el.textContent = msg;
+      el.className = "feedback visible";
+      el.style.color = aviso ? "#c0622a" : "";
+      timerFb = setTimeout(() => { el.className = "feedback"; }, 4000);
+    }
+
+    // ── Inicialização ───────────────────────────────────────────
+    const cookieIdioma = getCookie("idioma");
+    if (cookieIdioma) {
+      aplicarIdioma(cookieIdioma, true);
+    } else {
+      aplicarIdioma("pt", false);
+    }
+  </script>
+</body>
+</html>
