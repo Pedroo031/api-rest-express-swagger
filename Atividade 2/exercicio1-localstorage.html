@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercício 1 – Bloco de Anotações Pessoal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f5f0e8;
+      --paper:     #fffdf7;
+      --ink:       #2b2017;
+      --accent:    #c0622a;
+      --accent2:   #4a7c59;
+      --border:    #d9cdb8;
+      --shadow:    rgba(43,32,23,.12);
+      --line:      #e8dece;
+    }
+
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 20% 10%, rgba(192,98,42,.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 90%, rgba(74,124,89,.06) 0%, transparent 55%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 64px;
+      font-family: 'Lora', Georgia, serif;
+      color: var(--ink);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header .eyebrow {
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+    h1 span { color: var(--accent); }
+
+    .card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-shadow: 0 2px 6px var(--shadow), 0 12px 40px var(--shadow);
+      padding: 40px 44px 36px;
+      position: relative;
+    }
+
+    /* lined paper effect */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        var(--line) 31px,
+        var(--line) 32px
+      );
+      background-position: 0 56px;
+      pointer-events: none;
+      opacity: .55;
+    }
+
+    /* red margin line */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 72px;
+      width: 1px;
+      background: rgba(192,98,42,.25);
+      pointer-events: none;
+    }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 280px;
+      resize: vertical;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Lora', Georgia, serif;
+      font-size: 1.05rem;
+      line-height: 32px;
+      color: var(--ink);
+      padding: 0 0 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+    textarea::placeholder { color: #b8a990; font-style: italic; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: 'Lora', Georgia, serif;
+      font-size: .9rem;
+      border-radius: 3px;
+      padding: 10px 24px;
+      border: 1.5px solid transparent;
+      transition: all .18s ease;
+      letter-spacing: .03em;
+    }
+
+    .btn-save {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-save:hover {
+      background: #a8521f;
+      border-color: #a8521f;
+      box-shadow: 0 4px 14px rgba(192,98,42,.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-clear {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--border);
+    }
+    .btn-clear:hover {
+      border-color: #b8a990;
+      background: rgba(43,32,23,.04);
+    }
+
+    .feedback {
+      margin-top: 22px;
+      min-height: 28px;
+      text-align: center;
+      font-size: .88rem;
+      font-style: italic;
+      color: var(--accent2);
+      letter-spacing: .02em;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .35s ease, transform .35s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .feedback.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .feedback.warn { color: var(--accent); }
+
+    .meta {
+      margin-top: 32px;
+      font-size: .75rem;
+      color: #b8a990;
+      text-align: center;
+      letter-spacing: .05em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">Exercício 1 · LocalStorage</p>
+    <h1>Bloco de <span>Anotações</span></h1>
+  </header>
+
+  <div class="card">
+    <label for="anotacao">Sua anotação</label>
+    <textarea id="anotacao" placeholder="Escreva seus pensamentos, rascunhos e lembretes aqui…"></textarea>
+
+    <hr class="divider" />
+
+    <div class="actions">
+      <button class="btn-save" onclick="salvar()">Salvar anotação</button>
+      <button class="btn-clear" onclick="limpar()">Limpar anotação</button>
+    </div>
+
+    <p class="feedback" id="feedback"></p>
+  </div>
+
+  <p class="meta">Os dados ficam salvos no seu navegador via <code>localStorage</code></p>
+
+  <script>
+    const CHAVE = "minhaAnotacao";
+    const area = document.getElementById("anotacao");
+    const fb   = document.getElementById("feedback");
+    let timerFb;
+
+    // Carregar anotação salva ao abrir a página
+    const salvo = localStorage.getItem(CHAVE);
+    if (salvo) {
+      area.value = salvo;
+      mostrarFeedback("Anotação carregada com sucesso!", false);
+    } else {
+      mostrarFeedback("Nenhuma anotação salva ainda.", true);
+    }
+
+    function salvar() {
+      const texto = area.value;
+      localStorage.setItem(CHAVE, texto);
+      mostrarFeedback("Anotação salva!", false);
+    }
+
+    function limpar() {
+      area.value = "";
+      localStorage.removeItem(CHAVE);
+      mostrarFeedback("Anotação removida.", true);
+    }
+
+    function mostrarFeedback(msg, aviso) {
+      clearTimeout(timerFb);
+      fb.textContent = msg;
+      fb.className = "feedback visible" + (aviso ? " warn" : "");
+      timerFb = setTimeout(() => { fb.className = "feedback"; }, 3500);
+    }
+  </script>
+</body>
+</html>
