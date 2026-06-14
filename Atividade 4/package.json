@@ -1,0 +1,26 @@
+{
+  "name": "api-alunos-express-swagger",
+  "version": "1.0.0",
+  "description": "API REST de alunos desenvolvida com Express e documentada com Swagger/OpenAPI.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "api-rest",
+    "express",
+    "swagger",
+    "openapi",
+    "nodejs"
+  ],
+  "author": "Pedro Henrique",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
